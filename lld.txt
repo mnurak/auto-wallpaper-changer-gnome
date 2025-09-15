@@ -1,0 +1,70 @@
+Modules/Components
+
+| Module                | Responsibility                                                   | Functions / Interfaces                        |
+| --------------------- | ---------------------------------------------------------------- | --------------------------------------------- |
+| **Config Loader**     | Reads configuration (wallpaper directory, interval, etc.)        | `load_config()`                               |
+| **Directory Scanner** | Scans directory, filters supported image files                   | `scan_wallpapers()`                           |
+| **Random Selector**   | Selects a random wallpaper from the list                         | `select_random_wallpaper()`                   |
+| **Wallpaper Setter**  | Calls `gsettings` or interfaces with GNOME APIs to set wallpaper | `set_wallpaper()`                             |
+| **Signal Handler**    | Handles termination signals (SIGINT, SIGTERM)                    | `setup_signal_handlers()`, `signal_handler()` |
+| **Main Loop**         | Coordinates the flow: scan → select → set → sleep → repeat      | `main()`                                      |
+| **Logger** (optional) | Logs actions, errors, and status                                 | `log_message()`                               |
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+functions to be implemented in the c code
+
+// Load config from env vars or config file
+int load_config(char *wallpaper_dir, size_t dir_len, int *interval);
+
+// Scan wallpaper directory and populate WallpaperList
+int scan_wallpapers(const char *dir, WallpaperList *list);
+
+// Select a random wallpaper path from WallpaperList
+const char* select_random_wallpaper(const WallpaperList *list);
+
+// Set wallpaper using system call or GNOME API
+int set_wallpaper(const char *filepath);
+
+// Setup signal handling
+void setup_signal_handlers(void);
+void signal_handler(int signum);
+
+// Free wallpaper list memory
+void free_wallpaper_list(WallpaperList *list);
+
+// Log helper (optional)
+void log_message(const char *format, ...);
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+simple flow of the program 
+
+START
+  load_config()               # Set wallpaper dir and interval
+  setup_signal_handlers()     # Prepare for graceful termination
+
+  WHILE running:
+    scan_wallpapers()         # Get fresh list (handle file changes)
+    IF no wallpapers found:
+      log_message("No wallpapers found.")
+      sleep(interval)
+      CONTINUE
+
+    select_random_wallpaper() # Choose a wallpaper uniformly at random
+    set_wallpaper()           # Apply wallpaper
+
+    sleep(interval)           # Wait before next change
+
+  ON signal received:
+    CLEANUP resources
+    EXIT
+END
+
+///
+
+debugging tools gdb
+performance analyzers valgrind
