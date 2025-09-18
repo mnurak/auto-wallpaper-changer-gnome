@@ -256,7 +256,7 @@ void daemonize(void)
     close(STDERR_FILENO);
 
     // Redirect output to log file
-    int log_fd = open("/var/log/wallpaper_daemon.log", O_RDWR | O_CREAT | O_APPEND, 0640);
+    int log_fd = open("/tmp/wallpaper_daemon.log", O_RDWR | O_CREAT | O_APPEND, 0640);
     if (log_fd != -1)
     {
         dup2(log_fd, STDOUT_FILENO);
