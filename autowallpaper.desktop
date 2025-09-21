@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Exec=/opt/autowallpaper/bin/autowallpaper --dir /path/to/Wallpapers --t 300
+Hidden=false
+X-GNOME-Autostart-enabled=true
+Name=Auto Wallpaper
+Comment=Automatically changes wallpaper at intervals

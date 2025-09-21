@@ -79,7 +79,7 @@ int scan_wallpapers(const char *dir, WallpaperList *list)
 
         if (stat(filepath, &file_stat) == 0 && S_ISREG(file_stat.st_mode))
         {
-            if (strstr(entry->d_name, ".jpg") || strstr(entry->d_name, ".jpg") || strstr(entry->d_name, ".png"))
+            if (strstr(entry->d_name, ".jpg") || strstr(entry->d_name, ".jpeg") || strstr(entry->d_name, ".png"))
             {
                 list->paths = realloc(list->paths, (list->count + 1) * sizeof(char *));
                 if (!list->paths)
@@ -242,7 +242,6 @@ void daemonize(void)
         fflush(pid_file);        // flush stdio buffer
         fsync(fileno(pid_file)); // flush OS buffer
         fclose(pid_file);
-        printf("PID %d written\n", getpid());
     }
     else
     {
@@ -256,7 +255,7 @@ void daemonize(void)
     close(STDERR_FILENO);
 
     // Redirect output to log file
-    int log_fd = open("/tmp/wallpaper_daemon.log", O_RDWR | O_CREAT | O_APPEND, 0640);
+    int log_fd = open("/opt/autowallpaper/logs/wallpaper_daemon.log", O_RDWR | O_CREAT | O_APPEND, 0640);
     if (log_fd != -1)
     {
         dup2(log_fd, STDOUT_FILENO);
@@ -317,6 +316,7 @@ void wallpaper_daemon_main(int argc, char *argv[])
 // Main function to create the deamon and run the wallpaper changer
 int main(int argc, char *argv[])
 {
+    // use this line to run as a daemon process in the background
     daemonize();
 
     wallpaper_daemon_main(argc, argv);
